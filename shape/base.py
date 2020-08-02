@@ -4,7 +4,6 @@ class Shape:
 
     def draw(self, canvas):
         canvas.start_shape(self)
-        pass
 
     def points(self):
         return []
