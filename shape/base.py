@@ -3,6 +3,7 @@ class Shape:
         return None
 
     def draw(self, canvas):
+        canvas.start_shape(self)
         pass
 
     def points(self):
@@ -23,8 +24,3 @@ class Point:
 
     def data(self):
         return (self.x, self.y)
-
-    def draw(self, canvas):
-        r = 5
-        x, y = [self.x, self.y]
-        canvas.create_oval(x - r, y - r, x + r, y + r, tags="point")

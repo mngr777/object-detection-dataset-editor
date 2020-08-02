@@ -8,5 +8,5 @@ class Tool:
     def mouseup(self, event):
         pass
 
-    def mousemove(self, event):
+    def mousemotion(self, event):
         pass

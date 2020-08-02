@@ -12,11 +12,12 @@ class Rect(base.Shape):
         return tuple(map(lambda p: p.data(), self.rect_points))
 
     def draw(self, canvas):
+        super().draw(canvas)
         for i in range(0, 4):
-            p1, p2 = [self.rect_points[i], self.rect_points[(i + 1) % 4]]
-            p1.draw(canvas)
-            p2.draw(canvas)
-            canvas.create_line(p1.x, p1.y, p2.x, p2.y, tags="line")
+            p_1, p_2 = [self.rect_points[i], self.rect_points[(i + 1) % 4]]
+            canvas.draw_point(p_1.x, p_1.y)
+            canvas.draw_point(p_2.x, p_2.y)
+            canvas.draw_line(p_1.x, p_1.y, p_2.x, p_2.y)
 
     def points(self):
-        return self.rect_points;
+        return self.rect_points
