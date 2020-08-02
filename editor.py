@@ -8,6 +8,7 @@ import widget as wg
 class Context:
     def __init__(self):
         self.config = {
+            "line_width": 2,
             "point_radius": 5,
             "color_default": "magenta",
             "color_active": "cyan"
