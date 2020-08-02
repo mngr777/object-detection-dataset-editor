@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import importexport as ie
 import sys
 import tkinter as tk
 from tkinter import ttk
@@ -62,7 +63,7 @@ def main():
     canvas = wg.Canvas(context, content, image)
     canvas.canvas.grid()
 
-        # shape deletion
+    # shape deletion
     def delete_shape(_):
         sh = context.selected
         if sh:
@@ -70,6 +71,11 @@ def main():
             context.remove_shape(sh)
             canvas.update()
     root.bind("<Delete>", delete_shape)
+
+    # output
+    def output(_):
+        print(ie.export_json(context))
+    root.bind("<space>", output)
 
     # loop
     root.mainloop()

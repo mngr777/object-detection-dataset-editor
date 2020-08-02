@@ -1,3 +1,4 @@
+import math
 import shape.base as base
 
 class Rect(base.Shape):
@@ -9,7 +10,7 @@ class Rect(base.Shape):
             base.Point(self, x1, y2))
 
     def data(self):
-        return tuple(map(lambda p: p.data(), self.rect_points))
+        return list(map(lambda p: p.data(), self.rect_points))
 
     def draw(self, canvas):
         super().draw(canvas)

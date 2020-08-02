@@ -27,4 +27,4 @@ class Point:
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def data(self):
-        return (self.x, self.y)
+        return {"x": self.x, "y": self.y}
