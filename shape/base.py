@@ -1,3 +1,5 @@
+import math
+
 class Shape:
     def data(self):
         return None
@@ -20,6 +22,9 @@ class Point:
     def moveTo(self, x, y):
         self.x = x
         self.y = y
+
+    def dist(self, other):
+        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def data(self):
         return (self.x, self.y)

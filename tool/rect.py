@@ -5,6 +5,7 @@ class Rect(base.Tool):
     def __init__(self, context):
         super().__init__(context)
         self.rect = None
+        self.max_dist = 0
 
     def mousedown(self, event):
         x, y = [event.x, event.y]
@@ -13,13 +14,18 @@ class Rect(base.Tool):
         self.context.selected = self.rect
 
     def mouseup(self, event):
+        context = self.context
+        if self.max_dist < context.config['shape_create_min_dist']:
+            context.remove_shape(self.rect)
+            context.selected = None
         self.rect = None
+        self.max_dist = 0
 
     def mousemotion(self, event):
         x, y = [event.x, event.y]
-        if self.rect:
-            points = self.rect.points()
-            x_0, y_0 = [points[0].x, points[1].y]
-            points[1].moveTo(x, y_0)
-            points[2].moveTo(x, y)
-            points[3].moveTo(x_0, y)
+        points = self.rect.points()
+        x_0, y_0 = [points[0].x, points[1].y]
+        points[1].moveTo(x, y_0)
+        points[2].moveTo(x, y)
+        points[3].moveTo(x_0, y)
+        self.max_dist = max(self.max_dist, points[0].dist(points[2]))

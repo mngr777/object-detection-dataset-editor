@@ -15,8 +15,7 @@ class Rect(base.Shape):
         super().draw(canvas)
         for i in range(0, 4):
             p_1, p_2 = [self.rect_points[i], self.rect_points[(i + 1) % 4]]
-            canvas.draw_point(p_1.x, p_1.y)
-            canvas.draw_point(p_2.x, p_2.y)
+            canvas.draw_point(p_1.x, p_1.y, hilight=(i == 0))
             canvas.draw_line(p_1.x, p_1.y, p_2.x, p_2.y)
 
     def points(self):

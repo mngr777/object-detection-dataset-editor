@@ -76,10 +76,13 @@ class Canvas(base.Widget):
         w = self.context.config['line_width']
         self.canvas.create_line(x1, y1, x2, y2, tags="line", fill=self.color, width=w)
 
-    def draw_point(self, x, y):
+    def draw_point(self, x, y, hilight=False):
         w = self.context.config['line_width']
         r = self.context.config['point_radius']
         self.canvas.create_oval(x - r, y - r, x + r, y + r, tags="point", outline=self.color, width=w)
+        if hilight:
+            r += (w * 1.5)
+            self.canvas.create_oval(x - r, y - r, x + r, y + r, tags="point", outline=self.color, width=w)
 
     def __find_point_at(self, x, y):
         r = self.context.config['point_radius']

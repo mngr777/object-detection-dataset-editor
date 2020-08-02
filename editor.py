@@ -10,6 +10,7 @@ class Context:
         self.config = {
             "line_width": 2,
             "point_radius": 5,
+            "shape_create_min_dist": 10,
             "color_default": "magenta",
             "color_active": "cyan"
         }
