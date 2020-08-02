@@ -2,15 +2,50 @@ import math
 import shape.base as base
 
 class Rect(base.Shape):
-    def __init__(self, x1, y1, x2, y2):
+    NAME = "rect"
+
+    def __init__(self, x1, y1):
         self.rect_points = (
             base.Point(self, x1, y1),
-            base.Point(self, x2, y1),
-            base.Point(self, x2, y2),
-            base.Point(self, x1, y2))
+            base.Point(self, x1, y1),
+            base.Point(self, x1, y1),
+            base.Point(self, x1, y1))
 
     def data(self):
-        return list(map(lambda p: p.data(), self.rect_points))
+        return {"points": list(map(lambda p: p.data(), self.rect_points))}
+
+    @staticmethod
+    def from_data(data):
+        def error(message):
+            raise RuntimeError("Rect import: {}".format(message))
+
+        # check if data is dict
+        if not isinstance(data, dict):
+            error("data is not dict")
+
+        points = data.get("points")
+
+        # check if present
+        if not points:
+            error("`points' field is missing")
+        # check if list
+        if not isinstance(points, list):
+            error("`points' field is not a list")
+        # check size
+        if len(points) != 4:
+            error("`points' list size is {} instead of 4".format(len(points)))
+
+        # create object
+        rect = Rect(0, 0)
+        # update points
+        try:
+            for i in range(0, 4):
+                p = base.Point.from_data(rect, points[i])
+                rect.rect_points[i].x = p.x
+                rect.rect_points[i].y = p.y
+        except RuntimeError as e:
+            error(str(e))
+        return rect
 
     def draw(self, canvas):
         super().draw(canvas)

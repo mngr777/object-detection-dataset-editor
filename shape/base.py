@@ -1,14 +1,20 @@
 import math
 
 class Shape:
+    NAME: "<noname>"
+
     def data(self):
-        return None
+        raise NotImplementedError
+
+    @staticmethod
+    def from_data(data):
+        raise NotImplementedError
 
     def draw(self, canvas):
         canvas.start_shape(self)
 
     def points(self):
-        return []
+        raise NotImplementedError
 
 
 class Point:
@@ -28,3 +34,22 @@ class Point:
 
     def data(self):
         return {"x": self.x, "y": self.y}
+
+    @staticmethod
+    def from_data(shape, data):
+        def error(message):
+            raise RuntimeError("Point import: {}".format(message))
+
+        x, y = [data.get("x"), data.get("y")]
+        # check coords exist
+        if x is None:
+            error("`x' field is missing")
+        if y is None:
+            error("`y' field is missing")
+        # check coords are int
+        if not isinstance(x, int):
+            error("`x' is not int")
+        if not isinstance(y, int):
+            error("`y' is not int")
+
+        return Point(shape, x, y)

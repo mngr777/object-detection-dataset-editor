@@ -9,7 +9,7 @@ class Rect(base.Tool):
 
     def mousedown(self, event):
         x, y = [event.x, event.y]
-        self.rect = sh.Rect(x, y, x, y)
+        self.rect = sh.Rect(x, y)
         self.context.add_shape(self.rect)
         self.context.selected = self.rect
 

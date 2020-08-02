@@ -1,8 +1,8 @@
 #!/usr/bin/python
-import importexport as ie
-import sys
+import argparse
+import os
 import tkinter as tk
-from tkinter import ttk
+import importexport as ie
 import tool as tl
 import widget as wg
 
@@ -37,14 +37,32 @@ class Context:
             self.points.remove(p)
 
 
-def exit_usage():
-    print("Usage: TODO")
-    sys.exit(-1)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("image", help="Image file path")
+    parser.add_argument("--data", help="Data file path")
+    return parser.parse_args()
+
+
+def import_data_if_exists(context, path):
+    if path and path != "-" and os.path.isfile(path):
+        with open(path, 'r') as f:
+            data_json = f.read()
+            if len(data_json) > 0:
+                ie.import_json(context, data_json)
+
+
+def export_data(context, path):
+    data_json = ie.export_json(context)
+    if path and path != "-":
+        with open(path, "w+") as f:
+            f.write(data_json)
+    else:
+        print(data_json)
+
 
 def main():
-    if len(sys.argv) < 2:
-        exit_usage()
-    image_filename = sys.argv[1]
+    args = parse_args()
 
     # init Tk
     root = tk.Tk()
@@ -53,7 +71,7 @@ def main():
     context = Context()
 
     # load image
-    image = tk.PhotoImage(file=image_filename)
+    image = tk.PhotoImage(file=args.image)
 
     # main frame
     content = tk.Frame(root)
@@ -63,6 +81,11 @@ def main():
     canvas = wg.Canvas(context, content, image)
     canvas.canvas.grid()
 
+    # read data
+    if args.data:
+        import_data_if_exists(context, args.data)
+        canvas.update()
+
     # shape deletion
     def delete_shape(_):
         sh = context.selected
@@ -71,11 +94,22 @@ def main():
             context.remove_shape(sh)
             canvas.update()
     root.bind("<Delete>", delete_shape)
+    root.bind("d", delete_shape)
 
-    # output
-    def output(_):
-        print(ie.export_json(context))
-    root.bind("<space>", output)
+    # export and continue
+    def export_data_and_continue(_):
+        export_data(context, args.data)
+    root.bind("<space>", export_data_and_continue)
+
+    # export and exit
+    def export_data_and_exit(_):
+        export_data(context, args.data)
+        root.destroy()
+    root.bind("<Return>", export_data_and_exit)
+
+    def exit_no_save(_):
+        root.destroy()
+    root.bind("<Escape>", exit_no_save)
 
     # loop
     root.mainloop()
