@@ -13,7 +13,8 @@ class Context:
             "point_radius": 5,
             "shape_create_min_dist": 10,
             "color_default": "magenta",
-            "color_active": "cyan"
+            "color_active": "cyan",
+            "json_indent": 2
         }
         self.shapes = []
         self.points = []
