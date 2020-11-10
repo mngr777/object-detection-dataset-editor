@@ -48,7 +48,20 @@ class Context:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    binding_description = """
+Click and drag to create shape.
+Click on a shape point to select, drag point to change.
+
+Bindings:
+  t            Select next tool.
+  d, <Delete>  Delete selected shape.
+  <space>      Dump data to file (if --data=filename provided) or print.
+  <Return>     Dump data to file (if --data=filename provided) or print and exit.
+  <Excape>     Exit.
+    """
+    parser = argparse.ArgumentParser(
+        epilog=binding_description,
+        formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("image", help="Image file path")
     parser.add_argument("--data", help="Data file path")
     parser.add_argument("--tool", choices=tl.List.keys(), help="Tool")
