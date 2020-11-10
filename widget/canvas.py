@@ -84,6 +84,10 @@ class Canvas(base.Widget):
             r += (w * 1.5)
             self.canvas.create_oval(x - r, y - r, x + r, y + r, tags="point", outline=self.color, width=w)
 
+    def draw_rect(self, x, y, width, height):
+        w = self.context.config['line_width']
+        self.canvas.create_rectangle(x, y, x + width, y + height, tags="line", outline=self.color, width=w)
+
     def __find_point_at(self, x, y):
         r = self.context.config['point_radius']
         for p in self.context.points:

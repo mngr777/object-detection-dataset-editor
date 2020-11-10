@@ -2,6 +2,8 @@ import tool.base as base
 import shape as sh
 
 class Rect(base.Tool):
+    NAME = 'rect'
+
     def __init__(self, context):
         super().__init__(context)
         self.rect = None
@@ -9,7 +11,7 @@ class Rect(base.Tool):
 
     def mousedown(self, event):
         x, y = [event.x, event.y]
-        self.rect = sh.Rect(x, y)
+        self.rect = sh.Rect(x, y);
         self.context.add_shape(self.rect)
         self.context.selected = self.rect
 
@@ -23,9 +25,6 @@ class Rect(base.Tool):
 
     def mousemotion(self, event):
         x, y = [event.x, event.y]
-        points = self.rect.points()
-        x_0, y_0 = [points[0].x, points[1].y]
-        points[1].moveTo(x, y_0)
-        points[2].moveTo(x, y)
-        points[3].moveTo(x_0, y)
-        self.max_dist = max(self.max_dist, points[0].dist(points[2]))
+        points = self.rect.get_points()
+        points[1].moveTo(x, y)
+        self.max_dist = max(self.max_dist, points[0].dist(points[1]))

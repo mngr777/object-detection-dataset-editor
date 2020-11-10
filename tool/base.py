@@ -1,4 +1,6 @@
 class Tool:
+    NAME = '<noname>'
+
     def __init__(self, context):
         self.context = context
 

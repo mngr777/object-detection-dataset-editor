@@ -19,22 +19,31 @@ class Context:
         self.shapes = []
         self.points = []
         self.selected = None
-        self.tool = None
-        self.tool = tl.Rect(self)
+        self.tool_name = None
 
-    def set_tool(self, tool):
-        self.tool = tool
+        # init tools
+        self.tools = {}
+        for name, klass in tl.List.items():
+            self.tools[name] = klass(self);
+        self.select_tool('rect')
+
+    def select_tool(self, name):
+        if name in self.tools:
+            self.tool_name = name
 
     def get_tool(self):
-        return self.tool
+        return self.tools[self.tool_name]
+
+    def get_tool_name(self):
+        return self.tool_name
 
     def add_shape(self, shape):
         self.shapes.append(shape)
-        self.points.extend(shape.points())
+        self.points.extend(shape.get_points())
 
     def remove_shape(self, shape):
         self.shapes.remove(shape)
-        for p in shape.points():
+        for p in shape.get_points():
             self.points.remove(p)
 
 
@@ -42,6 +51,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("image", help="Image file path")
     parser.add_argument("--data", help="Data file path")
+    parser.add_argument("--tool", choices=tl.List.keys(), help="Tool")
     return parser.parse_args()
 
 
@@ -70,6 +80,8 @@ def main():
 
     # create context
     context = Context()
+    if args.tool:
+        context.select_tool(args.tool)
 
     # load image
     image = tk.PhotoImage(file=args.image)
@@ -96,6 +108,13 @@ def main():
             canvas.update()
     root.bind("<Delete>", delete_shape)
     root.bind("d", delete_shape)
+
+    def next_tool(_):
+        names = list(tl.List.keys())
+        idx = names.index(context.get_tool_name())
+        idx = (idx + 1) % len(names)
+        context.select_tool(names[idx])
+    root.bind("t", next_tool)
 
     # export and continue
     def export_data_and_continue(_):

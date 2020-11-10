@@ -21,6 +21,6 @@ def import_json(context, data_json):
 
 def export_json(context):
     # get data
-    data = list(map(lambda s: {"type": type(s).NAME, "data": s.data()}, context.shapes))
+    data = [{"type": type(s).NAME, "data": s.get_data()} for s in context.shapes]
     # to JSON
     return json.dumps(data, indent=context.config.get("json_indent"))
