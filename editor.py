@@ -57,7 +57,7 @@ Bindings:
   d, <Delete>  Delete selected shape.
   <space>      Dump data to file (if --data=filename provided) or print.
   <Return>     Dump data to file (if --data=filename provided) or print and exit.
-  <Excape>     Exit.
+  <Escape>     Exit.
     """
     parser = argparse.ArgumentParser(
         epilog=binding_description,
