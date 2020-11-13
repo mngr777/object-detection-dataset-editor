@@ -3,8 +3,10 @@ import argparse
 import os
 import tkinter as tk
 import importexport as ie
+import sys
 import tool as tl
 import widget as wg
+from PIL import Image, ImageTk
 
 class Context:
     def __init__(self):
@@ -58,6 +60,7 @@ Bindings:
   <space>      Dump data to file (if --data=filename provided) or print.
   <Return>     Dump data to file (if --data=filename provided) or print and exit.
   <Escape>     Exit.
+  b            Exit with failure status (allows breaking loop in wrapper script).
     """
     parser = argparse.ArgumentParser(
         epilog=binding_description,
@@ -97,14 +100,15 @@ def main():
         context.select_tool(args.tool)
 
     # load image
-    image = tk.PhotoImage(file=args.image)
+    image = Image.open(args.image)
+    image_tk = ImageTk.PhotoImage(image)
 
     # main frame
     content = tk.Frame(root)
     content.grid()
 
     # canvas
-    canvas = wg.Canvas(context, content, image)
+    canvas = wg.Canvas(context, content, image_tk)
     canvas.canvas.grid()
 
     # read data
@@ -143,6 +147,10 @@ def main():
     def exit_no_save(_):
         root.destroy()
     root.bind("<Escape>", exit_no_save)
+
+    def exit_failure(_):
+        sys.exit(-1)
+    root.bind("b", exit_failure)
 
     # loop
     root.mainloop()
