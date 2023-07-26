@@ -12,6 +12,8 @@ class Quad(base.Tool):
     def mousedown(self, event):
         x, y = [event.x, event.y]
         self.quad = sh.Quad(x, y)
+        if self.context.cid is not None:
+            self.quad.add_class(self.context.cid)
         self.context.add_shape(self.quad)
         self.context.selected = self.quad
 

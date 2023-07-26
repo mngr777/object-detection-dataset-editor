@@ -12,6 +12,8 @@ class Rect(base.Tool):
     def mousedown(self, event):
         x, y = [event.x, event.y]
         self.rect = sh.Rect(x, y);
+        if self.context.cid is not None:
+            self.rect.add_class(self.context.cid)
         self.context.add_shape(self.rect)
         self.context.selected = self.rect
 

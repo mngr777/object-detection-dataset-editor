@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 import importexport as ie
 import sys
+import shape
 import tool as tl
 import widget as wg
 from PIL import Image, ImageTk
@@ -11,7 +12,7 @@ from PIL import Image, ImageTk
 class Context:
     def __init__(self):
         self.config = {
-            "line_width": 2,
+            "line_width": 1,
             "point_radius": 5,
             "shape_create_min_dist": 10,
             "color_default": "magenta",
@@ -21,6 +22,8 @@ class Context:
         self.shapes = []
         self.points = []
         self.selected = None
+        self.cid = 0
+        self.class_labels = []
         self.tool_name = None
 
         # init tools
@@ -55,19 +58,23 @@ Click and drag to create shape.
 Click on a shape point to select, drag point to change.
 
 Bindings:
-  t            Select next tool.
-  d, <Delete>  Delete selected shape.
-  <space>      Dump data to file (if --data=filename provided) or print.
-  <Return>     Dump data to file (if --data=filename provided) or print and exit.
-  <Escape>     Exit.
-  b            Exit with failure status (allows breaking loop in wrapper script).
-    """
+  t               Select next tool.
+  d, <Delete>     Delete selected shape.
+  <space>         Dump data to file (if --data=filename provided) or print.
+  <Return>        Dump data to file (if --data=filename provided) or print and exit.
+  <Escape>        Exit.
+  <Control>-b     Exit with status 1, signals the wrapping script to (b)reak.
+  <Control>-r     Exit with status 2, signals the wrapping script to (r)eturn to previous image.
+  [0-9]           Toggle shape class if selected, otherwise set default shape class.
+  <Control>-[0-9] Same for classes 10 -- 19.
+"""
     parser = argparse.ArgumentParser(
         epilog=binding_description,
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("image", help="Image file path")
-    parser.add_argument("--data", help="Data file path")
-    parser.add_argument("--tool", choices=tl.List.keys(), help="Tool")
+    parser.add_argument("--data", "-d", help="Data file path")
+    parser.add_argument("--tool", "-t", choices=tl.List.keys(), help="Tool")
+    parser.add_argument("--labels", "-l", help="Class labels, comma separated")
     return parser.parse_args()
 
 
@@ -98,6 +105,8 @@ def main():
     context = Context()
     if args.tool:
         context.select_tool(args.tool)
+    if args.labels:
+        context.class_labels = args.labels.split(',')
 
     # load image
     image = Image.open(args.image)
@@ -126,6 +135,39 @@ def main():
     root.bind("<Delete>", delete_shape)
     root.bind("d", delete_shape)
 
+    # classes
+    # NOTE: allows only 20 classes, to use more add some input popup
+    def toggle_or_select_default_shape_class(cid):
+        def toggle_or_select(_):
+            sh = context.selected
+            if sh:
+                sh.toggle_class(cid)
+                canvas.update()
+            else:
+                context.cid = cid
+        return toggle_or_select
+    for cid in range(10):
+        # 0 -- 9
+        root.bind(f'<KP_{cid}>', toggle_or_select_default_shape_class(cid))
+        root.bind(f'{cid}', toggle_or_select_default_shape_class(cid))
+        # 10 -- 19
+        for ctrl in ['<Control_L>', '<Control_R>']:
+            root.bind(f'{ctrl}<KP_{cid}>', toggle_or_select_default_shape_class(cid+10))
+            root.bind(f'{ctrl}{cid}', toggle_or_select_default_shape_class(cid+10))
+
+
+    def rect_grow(amount):
+        def grow(_):
+            sh = context.selected
+            if sh and isinstance(sh, shape.Rect):
+                sh.grow(amount)
+                canvas.update()
+        return grow
+    root.bind('+', rect_grow(+1))
+    root.bind('-', rect_grow(-1))
+    root.bind('<KP_Add>', rect_grow(+1))
+    root.bind('<KP_Subtract>', rect_grow(-1))
+
     def next_tool(_):
         names = list(tl.List.keys())
         idx = names.index(context.get_tool_name())
@@ -143,14 +185,21 @@ def main():
         export_data(context, args.data)
         root.destroy()
     root.bind("<Return>", export_data_and_exit)
+    root.bind("<KP_Enter>", export_data_and_exit)
 
     def exit_no_save(_):
         root.destroy()
     root.bind("<Escape>", exit_no_save)
 
-    def exit_failure(_):
-        sys.exit(-1)
-    root.bind("b", exit_failure)
+    def exit_break(_):
+        sys.exit(1)
+    root.bind("<Control_L>b", exit_break)
+    root.bind("<Control_R>b", exit_break)
+
+    def exit_return(_):
+        sys.exit(2)
+    root.bind("<Control_L>r", exit_return)
+    root.bind("<Control_R>r", exit_return)
 
     # loop
     root.mainloop()

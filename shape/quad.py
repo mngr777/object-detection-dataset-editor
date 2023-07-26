@@ -5,6 +5,7 @@ class Quad(base.Shape):
     NAME = "quad"
 
     def __init__(self, x1, y1):
+        super().__init__()
         self.points = (
             base.Point(self, x1, y1),
             base.Point(self, x1, y1),
@@ -12,7 +13,9 @@ class Quad(base.Shape):
             base.Point(self, x1, y1))
 
     def get_data(self):
-        return {"points": [p.get_data() for p in self.points]}
+        return {
+            "classes": self.get_classes(),
+            "points": [p.get_data() for p in self.points]}
 
     @staticmethod
     def from_data(data):
@@ -45,6 +48,10 @@ class Quad(base.Shape):
                 quad.points[i].y = p.y
         except RuntimeError as e:
             error(str(e))
+
+        # classes
+        quad.add_classes(data.get("classes", [0]))
+
         return quad
 
     def do_draw(self, canvas):
@@ -52,6 +59,8 @@ class Quad(base.Shape):
             p_1, p_2 = [self.points[i], self.points[(i + 1) % 4]]
             canvas.draw_point(p_1.x, p_1.y, hilight=(i == 0))
             canvas.draw_line(p_1.x, p_1.y, p_2.x, p_2.y)
+        class_text = ', '.join(self.get_class_names(canvas.context.class_labels))
+        canvas.draw_text(self.points[0].x, self.points[0].y - 14, class_text)
 
     def get_points(self):
         return self.points

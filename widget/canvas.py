@@ -58,6 +58,7 @@ class Canvas(base.Widget):
         # Reset
         self.canvas.delete("point")
         self.canvas.delete("line")
+        self.canvas.delete("text")
         # Draw
         for s in self.context.shapes:
             s.draw(self)
@@ -87,6 +88,9 @@ class Canvas(base.Widget):
     def draw_rect(self, x, y, width, height):
         w = self.context.config['line_width']
         self.canvas.create_rectangle(x, y, x + width, y + height, tags="line", outline=self.color, width=w)
+
+    def draw_text(self, x, y, text):
+        self.canvas.create_text(x, y, text=text, tags="text", fill=self.color)
 
     def __find_point_at(self, x, y):
         r = self.context.config['point_radius']

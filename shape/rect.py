@@ -5,6 +5,7 @@ class Rect(base.Shape):
     NAME = "rect"
 
     def __init__(self, x1, y1, width = 0, height = 0):
+        super().__init__()
         p_1 = base.Point(self, x1, y1)
         self.points = (p_1, p_1.moved(width, height))
 
@@ -15,6 +16,7 @@ class Rect(base.Shape):
         y_min = min(p_1.y, p_2.y)
         y_max = max(p_1.y, p_2.y)
         return {
+            "classes": self.get_classes(),
             "x": x_min,
             "y": y_min,
             "w": x_max - x_min,
@@ -44,7 +46,15 @@ class Rect(base.Shape):
 
         # create object
         rect = Rect(data["x"], data["y"], data["w"], data["h"])
+
+        # classes
+        rect.add_classes(data.get("classes", [0]))
+
         return rect
+
+    def grow(self, amount):
+        self.points[0].move(-amount, -amount)
+        self.points[1].move(amount, amount)
 
     def do_draw(self, canvas):
         data = self.get_data()
@@ -52,6 +62,8 @@ class Rect(base.Shape):
         p_1, p_2 = self.points
         canvas.draw_point(p_1.x, p_1.y)
         canvas.draw_point(p_2.x, p_2.y)
+        class_text = ', '.join(self.get_class_names(canvas.context.class_labels))
+        canvas.draw_text(data["x"], data["y"] - 10, class_text)
 
     def get_points(self):
         return self.points;
